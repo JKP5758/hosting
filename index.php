@@ -633,25 +633,32 @@
                     setStatus(`Memeriksa ${fullHost} ...`, 'checking');
 
                     try {
-                        const res = await fetch(`domain_check.php?domain=${encodeURIComponent(name)}`, {
+                        const url = `domain_check.php?domain=${encodeURIComponent(name)}`;
+                        console.log('[DomainCheck] Checking', { input: name, fullHost, url });
+                        const res = await fetch(url, {
                             cache: 'no-store'
                         });
+                        console.log('[DomainCheck] HTTP status', res.status);
                         if (!res.ok) throw new Error('HTTP ' + res.status);
                         const data = await res.json();
+                        console.log('[DomainCheck] Response JSON', data);
 
                         // API domain_check.php: { exists: true/false } atau { error: "..." }
                         if (data.error) {
+                            console.warn('[DomainCheck] Server error:', data.error);
                             setStatus('Error: ' + data.error, 'error');
                             toggleNext(false);
                         } else if (data.exists) {
+                            console.log('[DomainCheck] Domain taken:', fullHost);
                             setStatus(`${fullHost} sudah terdaftar (tidak tersedia).`, 'taken');
                             toggleNext(false);
                         } else {
+                            console.log('[DomainCheck] Domain available:', fullHost);
                             setStatus(`${fullHost} tersedia ✅`, 'available');
                             toggleNext(true);
                         }
                     } catch (err) {
-                        console.error('Domain check error:', err);
+                        console.error('[DomainCheck] Fetch failed:', err);
                         setStatus('Gagal memeriksa domain. Coba lagi nanti.', 'error');
                         toggleNext(false);
                     }
