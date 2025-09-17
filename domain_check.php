@@ -55,8 +55,8 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Check if domain exists
-$stmt = $conn->prepare("SELECT COUNT(*) FROM `{$db_table}` WHERE `{$db_column}` = ?");
+// Check if domain exists (either stored as plain or suffixed)
+$stmt = $conn->prepare("SELECT COUNT(*) FROM `{$db_table}` WHERE `{$db_column}` = ? OR `{$db_column}` = ?");
 if ($stmt === false) {
     // Log error
     echo json_encode(['error' => 'Terjadi kesalahan pada server.']);
@@ -64,7 +64,7 @@ if ($stmt === false) {
     exit;
 }
 
-$stmt->bind_param("s", $full_domain);
+$stmt->bind_param("ss", $full_domain, $domain);
 $stmt->execute();
 $count = 0;
 $stmt->bind_result($count);

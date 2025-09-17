@@ -450,10 +450,22 @@
 
         function updateValidationUI() {
             const rules = {
-                length: { el: lengthRule, valid: validationRules.length },
-                letter: { el: letterRule, valid: validationRules.letter },
-                number: { el: numberRule, valid: validationRules.number },
-                match: { el: matchRule, valid: validationRules.match }
+                length: {
+                    el: lengthRule,
+                    valid: validationRules.length
+                },
+                letter: {
+                    el: letterRule,
+                    valid: validationRules.letter
+                },
+                number: {
+                    el: numberRule,
+                    valid: validationRules.number
+                },
+                match: {
+                    el: matchRule,
+                    valid: validationRules.match
+                }
             };
 
             for (const key in rules) {
@@ -559,7 +571,7 @@
         });
 
         // DOMAIN AVAILABILITY CHECK (pakai check.php yang sudah ada)
-        (function () {
+        (function() {
             const domainInput = document.getElementById('domain');
             const domainStatus = document.getElementById('domain-status');
             const nextBtn = document.getElementById('next-btn'); // tombol Next pada step 1
@@ -594,7 +606,9 @@
                 const clean = normalizeInput(domainInput.value);
                 domainInput.value = clean;
                 // restore caret (simple attempt)
-                try { domainInput.setSelectionRange(pos, pos); } catch (_) { }
+                try {
+                    domainInput.setSelectionRange(pos, pos);
+                } catch (_) {}
 
                 setStatus('Menunggu...', 'idle');
                 toggleNext(false);
@@ -619,15 +633,17 @@
                     setStatus(`Memeriksa ${fullHost} ...`, 'checking');
 
                     try {
-                        const res = await fetch('check.php?host=' + encodeURIComponent(fullHost), { cache: 'no-store' });
+                        const res = await fetch(`domain_check.php?domain=${encodeURIComponent(name)}`, {
+                            cache: 'no-store'
+                        });
                         if (!res.ok) throw new Error('HTTP ' + res.status);
                         const data = await res.json();
 
-                        // API check.php: { host: "...", dnsFound: true/false } atau { error: "..." }
+                        // API domain_check.php: { exists: true/false } atau { error: "..." }
                         if (data.error) {
                             setStatus('Error: ' + data.error, 'error');
                             toggleNext(false);
-                        } else if (data.dnsFound) {
+                        } else if (data.exists) {
                             setStatus(`${fullHost} sudah terdaftar (tidak tersedia).`, 'taken');
                             toggleNext(false);
                         } else {
@@ -645,12 +661,13 @@
             // optional: cek saat focusout juga (untuk jaga-jaga)
             domainInput.addEventListener('blur', () => {
                 // trigger input handler once immediately
-                const ev = new Event('input', { bubbles: true });
+                const ev = new Event('input', {
+                    bubbles: true
+                });
                 domainInput.dispatchEvent(ev);
             });
 
         })();
-
     </script>
 
 </body>
