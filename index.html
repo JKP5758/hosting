@@ -11,13 +11,44 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+
+        /* Custom styles for modal transition */
+        #order-modal.hidden {
+            display: none;
+        }
+
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.2s ease-out;
+        }
+
+        .modal-leave {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .modal-leave-active {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.2s ease-in;
+        }
+
+        .password-validation-icon {
+            transition: color 0.2s;
+        }
     </style>
 </head>
 
 <body class="bg-gray-50 text-gray-800">
 
     <!-- Header & Navigasi -->
-    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200">
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-200">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="text-2xl font-bold text-gray-900">
                 JKP<span class="text-indigo-600">Host</span>
@@ -72,8 +103,9 @@
                         </a>
                     </div>
                     <div class="hidden md:block">
-                        <img src="https://placehold.co/600x400/34495e/ffffff?text=Hero+Image"
-                            alt="Ilustrasi Web Hosting" class="rounded-xl shadow-2xl">
+                        <img src="hero.png"
+                            alt="Ilustrasi Web Hosting" 
+                            class="drop-shadow-2xl">
                     </div>
                 </div>
             </div>
@@ -155,9 +187,9 @@
                             <li class="flex items-center"><span class="text-indigo-600 mr-3">✔</span> Domain Gratis</li>
                             <li class="flex items-center"><span class="text-indigo-600 mr-3">✔</span> SSL Gratis</li>
                         </ul>
-                        <a href="#"
-                            class="w-full text-center bg-gray-200 text-gray-800 font-semibold px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors">Pilih
-                            Paket</a>
+                        <button data-paket="Personal"
+                            class="select-package-btn w-full text-center bg-gray-200 text-gray-800 font-semibold px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors">Pilih
+                            Paket</button>
                     </div>
                     <!-- Paket Populer -->
                     <div
@@ -179,9 +211,9 @@
                             <li class="flex items-center"><span class="text-indigo-600 mr-3">✔</span> Backup Mingguan
                             </li>
                         </ul>
-                        <a href="#"
-                            class="w-full text-center bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors">Pilih
-                            Paket</a>
+                        <button data-paket="Bisnis"
+                            class="select-package-btn w-full text-center bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors">Pilih
+                            Paket</button>
                     </div>
                 </div>
             </div>
@@ -214,22 +246,103 @@
                                     clip-rule="evenodd" />
                             </svg>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
+                        <a href="https://x.com/JKP5758/" class="text-gray-400 hover:text-white">
                             <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path
                                     d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/jkp_web/" class="text-gray-400 hover:text-white">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.012-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.08 2.525c.636-.247 1.363-.416 2.427-.465C9.53 2.013 9.884 2 12.315 2zM12 7a5 5 0 100 10 5 5 0 000-10zm0 8a3 3 0 110-6 3 3 0 010 6zm6.406-11.646a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4z"
+                                    clip-rule="evenodd" />
                             </svg>
                         </a>
                     </div>
                 </div>
             </div>
             <div class="mt-12 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm">
-                &copy; 2025 JKP Host. Semua Hak Cipta Dilindungi.
+                &copy; <span id="year"></span> JKP Host. Semua Hak Cipta Dilindungi.
             </div>
+
         </div>
     </footer>
 
+    <!-- Modal Form -->
+    <div id="order-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div id="modal-content" class="bg-white w-full max-w-md p-8 rounded-xl shadow-2xl relative modal-enter">
+            <button id="close-modal-btn"
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Pesan Paket: <span id="paket-dipilih"
+                    class="text-indigo-600"></span></h2>
+            <p class="text-gray-500 mb-6">Lengkapi data diri Anda untuk melanjutkan.</p>
+
+            <form id="order-form" class="space-y-4">
+                <div>
+                    <label for="nama" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                    <input type="text" id="nama" name="nama" required
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Alamat Email</label>
+                    <input type="email" id="email" name="email" required
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="nickname" class="block text-sm font-medium text-gray-700">Nickname</label>
+                    <input type="text" id="nickname" name="nickname" required
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password" required
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="confirm-password" class="block text-sm font-medium text-gray-700">Konfirmasi
+                        Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div id="password-validation-rules" class="text-sm space-y-1">
+                    <p id="length-rule" class="text-gray-500 flex items-center"><span
+                            class="password-validation-icon mr-2">●</span> Minimal 8 karakter</p>
+                    <p id="letter-rule" class="text-gray-500 flex items-center"><span
+                            class="password-validation-icon mr-2">●</span> Minimal 1 huruf</p>
+                    <p id="number-rule" class="text-gray-500 flex items-center"><span
+                            class="password-validation-icon mr-2">●</span> Minimal 1 angka</p>
+                    <p id="match-rule" class="text-gray-500 flex items-center"><span
+                            class="password-validation-icon mr-2">●</span> Password harus cocok</p>
+                </div>
+                <div>
+                    <label for="domain" class="block text-sm font-medium text-gray-700">Nama Domain</label>
+                    <div class="mt-1 flex rounded-md shadow-sm">
+                        <input type="text" name="domain" id="domain" required
+                            class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300">
+                        <span
+                            class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">.host.jkp.my.id</span>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed">Daftar
+                        Sekarang</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+
         // JavaScript untuk menu mobile
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -245,6 +358,141 @@
                 mobileMenu.classList.add('hidden');
             });
         });
+
+        // JavaScript untuk Modal Form
+        const selectPackageButtons = document.querySelectorAll('.select-package-btn');
+        const orderModal = document.getElementById('order-modal');
+        const modalContent = document.getElementById('modal-content');
+        const closeModalButton = document.getElementById('close-modal-btn');
+        const paketDipilihSpan = document.getElementById('paket-dipilih');
+        const orderForm = document.getElementById('order-form');
+
+        // Password validation elements
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const lengthRule = document.getElementById('length-rule');
+        const letterRule = document.getElementById('letter-rule');
+        const numberRule = document.getElementById('number-rule');
+        const matchRule = document.getElementById('match-rule');
+        const submitButton = orderForm.querySelector('button[type="submit"]');
+
+        const validationRules = {
+            length: false,
+            letter: false,
+            number: false,
+            match: false
+        };
+
+        function updateValidationUI() {
+            const rules = {
+                length: { el: lengthRule, valid: validationRules.length },
+                letter: { el: letterRule, valid: validationRules.letter },
+                number: { el: numberRule, valid: validationRules.number },
+                match: { el: matchRule, valid: validationRules.match }
+            };
+
+            for (const key in rules) {
+                const icon = rules[key].el.querySelector('.password-validation-icon');
+                if (rules[key].valid) {
+                    rules[key].el.classList.remove('text-gray-500');
+                    rules[key].el.classList.add('text-green-600');
+                    icon.textContent = '✔';
+                } else {
+                    rules[key].el.classList.add('text-gray-500');
+                    rules[key].el.classList.remove('text-green-600');
+                    icon.textContent = '●';
+                }
+            }
+            // Enable/disable submit button
+            const allValid = Object.values(validationRules).every(Boolean);
+            submitButton.disabled = !allValid;
+        }
+
+
+        function validatePassword() {
+            const pass = passwordInput.value;
+            const confirmPass = confirmPasswordInput.value;
+
+            // Rule 1: Length >= 8
+            validationRules.length = pass.length >= 8;
+
+            // Rule 2: Contains a letter
+            validationRules.letter = /[a-zA-Z]/.test(pass);
+
+            // Rule 3: Contains a number
+            validationRules.number = /\d/.test(pass);
+
+            // Rule 4: Passwords match
+            validationRules.match = pass && pass === confirmPass;
+
+            updateValidationUI();
+        }
+
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', validatePassword);
+
+        // Fungsi untuk membuka modal
+        const openModal = (packageName) => {
+            paketDipilihSpan.textContent = packageName;
+            orderModal.classList.remove('hidden');
+            // Animate entrance
+            modalContent.classList.remove('modal-leave', 'modal-leave-active');
+            modalContent.classList.add('modal-enter-active');
+            setTimeout(() => modalContent.classList.remove('modal-enter-active', 'modal-enter'), 200);
+
+            // Reset form dan validasi saat modal dibuka
+            orderForm.reset();
+            Object.keys(validationRules).forEach(k => validationRules[k] = false);
+            updateValidationUI();
+        };
+
+        // Fungsi untuk menutup modal
+        const closeModal = () => {
+            // Animate exit
+            modalContent.classList.remove('modal-enter', 'modal-enter-active');
+            modalContent.classList.add('modal-leave-active');
+            setTimeout(() => {
+                modalContent.classList.remove('modal-leave-active', 'modal-leave');
+                orderModal.classList.add('hidden');
+            }, 200);
+        };
+
+        // Event listener untuk setiap tombol "Pilih Paket"
+        selectPackageButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const packageName = button.getAttribute('data-paket');
+                openModal(packageName);
+            });
+        });
+
+        // Event listener untuk tombol close
+        closeModalButton.addEventListener('click', closeModal);
+
+        // Event listener untuk menutup modal saat klik di luar area form
+        orderModal.addEventListener('click', (event) => {
+            if (event.target === orderModal) {
+                closeModal();
+            }
+        });
+
+        // Event listener untuk form submission
+        orderForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const allValid = Object.values(validationRules).every(Boolean);
+            if (allValid) {
+                // Simulasi pengiriman data
+                console.log('Form submitted successfully!');
+                const formData = new FormData(orderForm);
+                const data = Object.fromEntries(formData.entries());
+                console.log('Data:', data);
+                // Ganti alert dengan notifikasi yang lebih baik di aplikasi nyata
+                alert(`Pendaftaran untuk paket ${paketDipilihSpan.textContent} berhasil!`);
+                closeModal();
+            } else {
+                alert('Harap penuhi semua persyaratan password.');
+            }
+        });
+
     </script>
 
 </body>
