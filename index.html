@@ -302,7 +302,7 @@
                                 class="inline-flex items-center px-3 rounded-l-md border border-gray-300 bg-gray-100 text-gray-700 text-sm select-none">
                                 +62
                             </span>
-                    
+
                             <!-- Nomor telepon -->
                             <input type="text" id="telepon" name="telepon" required
                                 class="flex-1 px-3 py-2 border-t border-b border-r border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -312,13 +312,18 @@
 
                     <div>
                         <label for="domain" class="block text-sm font-medium text-gray-700">Nama Domain</label>
-                        <div class="mt-1 flex rounded-md shadow-sm">
+                        <div class="mt-1 flex rounded-md shadow-sm items-center">
                             <input type="text" name="domain" id="domain" required
-                                class="flex-1 block w-full px-3 py-2 border rounded-l-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                class="flex-1 block w-full px-3 py-2 border rounded-l-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                placeholder="misal: nama-situs">
                             <span
-                                class="inline-flex items-center px-3 rounded-r-md border border-l-0 bg-gray-50 text-gray-500 text-sm">.host.jkp.my.id</span>
+                                class="inline-flex items-center px-3 py-2 ml-0.5 rounded-r-md border border-l-0 bg-gray-50 text-gray-500 text-sm">.host.jkp.my.id</span>
                         </div>
+                        <!-- status dan helper -->
+                        <p id="domain-status" class="mt-2 text-sm text-gray-500">Masukkan nama domain tanpa ekstensi.
+                        </p>
                     </div>
+
                     <div class="pt-4">
                         <button type="button" id="next-btn"
                             class="w-full py-3 px-4 rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">Next</button>
@@ -389,19 +394,19 @@
 
         const teleponInput = document.getElementById("telepon");
 
-            teleponInput.addEventListener("input", () => {
-                // Hapus semua karakter non-angka
-                let value = teleponInput.value.replace(/\D/g, "");
+        teleponInput.addEventListener("input", () => {
+            // Hapus semua karakter non-angka
+            let value = teleponInput.value.replace(/\D/g, "");
 
-                // Format jadi XXX-XXXX-XXXX
-                if (value.length > 3 && value.length <= 7) {
-                    value = value.slice(0, 3) + "-" + value.slice(3);
-                } else if (value.length > 7) {
-                    value = value.slice(0, 3) + "-" + value.slice(3, 7) + "-" + value.slice(7, 12);
-                }
+            // Format jadi XXX-XXXX-XXXX
+            if (value.length > 3 && value.length <= 7) {
+                value = value.slice(0, 3) + "-" + value.slice(3);
+            } else if (value.length > 7) {
+                value = value.slice(0, 3) + "-" + value.slice(3, 7) + "-" + value.slice(7, 12);
+            }
 
-                teleponInput.value = value;
-            });
+            teleponInput.value = value;
+        });
 
         // JavaScript untuk menu mobile
         const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -552,6 +557,99 @@
                 alert('Harap penuhi semua persyaratan password.');
             }
         });
+
+        // DOMAIN AVAILABILITY CHECK (pakai check.php yang sudah ada)
+        (function () {
+            const domainInput = document.getElementById('domain');
+            const domainStatus = document.getElementById('domain-status');
+            const nextBtn = document.getElementById('next-btn'); // tombol Next pada step 1
+            let debounceTimer = null;
+            const SUFFIX = '.host.jkp.my.id'; // suffix yang otomatis ditambahkan saat cek
+
+            function setStatus(text, state) {
+                // state: 'idle'|'checking'|'available'|'taken'|'error'
+                domainStatus.textContent = text;
+                domainStatus.classList.remove('text-gray-500', 'text-indigo-600', 'text-green-600', 'text-red-600');
+                if (state === 'checking') domainStatus.classList.add('text-indigo-600');
+                else if (state === 'available') domainStatus.classList.add('text-green-600');
+                else if (state === 'taken') domainStatus.classList.add('text-red-600');
+                else domainStatus.classList.add('text-gray-500');
+            }
+
+            function normalizeInput(v) {
+                // hanya izinkan huruf, angka, dash; hilangkan spasi & huruf besar -> lowercase
+                return v.toLowerCase().replace(/[^a-z0-9\-]/g, '').replace(/^-+|-+$/g, '');
+            }
+
+            function toggleNext(enabled) {
+                if (!nextBtn) return;
+                nextBtn.disabled = !enabled;
+                if (enabled) nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                else nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            domainInput.addEventListener('input', (e) => {
+                // sanitize on-the-fly (kece bgt)
+                const pos = domainInput.selectionStart;
+                const clean = normalizeInput(domainInput.value);
+                domainInput.value = clean;
+                // restore caret (simple attempt)
+                try { domainInput.setSelectionRange(pos, pos); } catch (_) { }
+
+                setStatus('Menunggu...', 'idle');
+                toggleNext(false);
+
+                if (debounceTimer) clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(async () => {
+                    const name = domainInput.value.trim();
+                    if (!name) {
+                        setStatus('Masukkan nama domain terlebih dahulu.', 'idle');
+                        toggleNext(false);
+                        return;
+                    }
+
+                    // jangan cek kalau format tidak valid (misal terlalu pendek)
+                    if (name.length < 2) {
+                        setStatus('Nama domain terlalu pendek.', 'error');
+                        toggleNext(false);
+                        return;
+                    }
+
+                    const fullHost = name + SUFFIX;
+                    setStatus(`Memeriksa ${fullHost} ...`, 'checking');
+
+                    try {
+                        const res = await fetch('check.php?host=' + encodeURIComponent(fullHost), { cache: 'no-store' });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        const data = await res.json();
+
+                        // API check.php: { host: "...", dnsFound: true/false } atau { error: "..." }
+                        if (data.error) {
+                            setStatus('Error: ' + data.error, 'error');
+                            toggleNext(false);
+                        } else if (data.dnsFound) {
+                            setStatus(`${fullHost} sudah terdaftar (tidak tersedia).`, 'taken');
+                            toggleNext(false);
+                        } else {
+                            setStatus(`${fullHost} tersedia ✅`, 'available');
+                            toggleNext(true);
+                        }
+                    } catch (err) {
+                        console.error('Domain check error:', err);
+                        setStatus('Gagal memeriksa domain. Coba lagi nanti.', 'error');
+                        toggleNext(false);
+                    }
+                }, 600); // debounce 600ms
+            });
+
+            // optional: cek saat focusout juga (untuk jaga-jaga)
+            domainInput.addEventListener('blur', () => {
+                // trigger input handler once immediately
+                const ev = new Event('input', { bubbles: true });
+                domainInput.dispatchEvent(ev);
+            });
+
+        })();
 
     </script>
 
