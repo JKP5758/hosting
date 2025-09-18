@@ -42,6 +42,21 @@
         .password-validation-icon {
             transition: color 0.2s;
         }
+
+        /* Notification card animations */
+        #success-notification {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        #success-notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        #success-notification .transform {
+            transition: all 0.3s ease-out;
+        }
     </style>
 </head>
 
@@ -266,6 +281,33 @@
 
         </div>
     </footer>
+
+    <!-- Success Notification Card -->
+    <div id="success-notification" class="hidden fixed top-6 right-6 z-50">
+        <div class="bg-white rounded-xl shadow-2xl border border-gray-100 p-6 max-w-sm transform transition-all duration-300 ease-out">
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Pesanan Diterima!</h3>
+                    <p class="text-sm text-gray-600 mb-3">Terima kasih telah memilih JKP Host. Pesanan Anda akan diproses dalam 24 jam.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">Order ID: <span id="notification-order-id" class="font-mono font-medium"></span></span>
+                        <button id="close-notification" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Form -->
     <div id="order-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -552,6 +594,35 @@
             }
         });
 
+        // Success notification functions
+        const successNotification = document.getElementById('success-notification');
+        const notificationOrderId = document.getElementById('notification-order-id');
+        const closeNotificationBtn = document.getElementById('close-notification');
+
+        const showSuccessNotification = (orderId) => {
+            notificationOrderId.textContent = orderId;
+            successNotification.classList.remove('hidden');
+            // Trigger animation
+            setTimeout(() => {
+                successNotification.classList.add('show');
+            }, 100);
+            
+            // Auto hide after 8 seconds
+            setTimeout(() => {
+                hideSuccessNotification();
+            }, 8000);
+        };
+
+        const hideSuccessNotification = () => {
+            successNotification.classList.remove('show');
+            setTimeout(() => {
+                successNotification.classList.add('hidden');
+            }, 300);
+        };
+
+        // Close notification event listener
+        closeNotificationBtn.addEventListener('click', hideSuccessNotification);
+
         // Event listener untuk form submission
         orderForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -574,8 +645,8 @@
                     const result = await response.json();
                     
                     if (result.success) {
-                        alert(`Pendaftaran untuk paket ${paketDipilihSpan.textContent} berhasil!\n\nDomain: ${result.domain}\nOrder ID: ${result.order_id}`);
                         closeModal();
+                        showSuccessNotification(result.order_id);
                     } else {
                         alert('Error: ' + result.error);
                     }
