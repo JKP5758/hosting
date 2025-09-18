@@ -27,7 +27,7 @@ $db_host = $env['DB_HOST'] ?? 'localhost';
 $db_user = $env['DB_USERNAME'] ?? 'root';
 $db_pass = $env['DB_PASSWORD'] ?? '';
 $db_name = $env['DB_DATABASE'] ?? 'hosting';
-$db_table = $env['DB_TABLE'] ?? 'domains';
+$db_table = $env['DOMAINS_TABLE'] ?? 'domains';
 $db_column = $env['DB_COLUMN'] ?? 'domain_name';
 
 // Get domain from request

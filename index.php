@@ -281,7 +281,7 @@
                     class="text-indigo-600"></span></h2>
             <p class="text-gray-500 mb-6">Lengkapi data diri Anda untuk melanjutkan.</p>
 
-            <form id="order-form" class="space-y-4">
+            <form action="order.php" method="post" id="order-form" class="space-y-4">
                 <!-- Step 1 -->
                 <div id="form-step-1" class="space-y-4">
                     <div>
@@ -553,18 +553,40 @@
         });
 
         // Event listener untuk form submission
-        orderForm.addEventListener('submit', (e) => {
+        orderForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const allValid = Object.values(validationRules).every(Boolean);
             if (allValid) {
-                // Simulasi pengiriman data
-                console.log('Form submitted successfully!');
                 const formData = new FormData(orderForm);
-                const data = Object.fromEntries(formData.entries());
-                console.log('Data:', data);
-                // Ganti alert dengan notifikasi yang lebih baik di aplikasi nyata
-                alert(`Pendaftaran untuk paket ${paketDipilihSpan.textContent} berhasil!`);
-                closeModal();
+                
+                // Show loading state
+                const submitButton = orderForm.querySelector('button[type="submit"]');
+                const originalText = submitButton.textContent;
+                submitButton.disabled = true;
+                submitButton.textContent = 'Memproses...';
+                
+                try {
+                    const response = await fetch('order.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert(`Pendaftaran untuk paket ${paketDipilihSpan.textContent} berhasil!\n\nDomain: ${result.domain}\nOrder ID: ${result.order_id}`);
+                        closeModal();
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat mengirim data. Silakan coba lagi.');
+                } finally {
+                    // Reset button state
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                }
             } else {
                 alert('Harap penuhi semua persyaratan password.');
             }
